@@ -21,7 +21,8 @@ services:
     networks:
         - main_network
   message_consumer:
-    build: /data_consumer
+    build: ./data_consumer
+    restart: always
     command: python app/consumer.py
     volumes:
       - ./data_consumer/:/app
@@ -32,6 +33,7 @@ services:
       - main_network
   main_app:
     build: ./application
+    restart: always
     command: python app/main.py
     volumes:
       - ./application/:/app
