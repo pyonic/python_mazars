@@ -35,6 +35,8 @@ services:
     build: ./application
     restart: always
     command: python app/main.py
+    environment:
+      - RABBIT_MQ_FULL_URL=amqp://guest:guest@rabbitmq_service?heartbeat=600&blocked_connection_timeout=300
     volumes:
       - ./application/:/app
     ports:

@@ -1,6 +1,9 @@
 from pydantic import BaseModel
 from fastapi import FastAPI
+from threading import Thread
+import asyncio
 import uvicorn
+import time
 import pika
 import os
 
@@ -10,7 +13,8 @@ PORT = os.environ.get("APPLICATION_PORT", "8080")
 RABBIT_MQ_URL = os.environ.get("RABBIT_MQ_URL", "127.0.0.1")
 RABBIT_MQ_PORT = os.environ.get("RABBIT_MQ_PORT", "5672")
 RABBIT_CHANEL_NAME = os.environ.get("RABBIT_MQ_CHANNEL", "usernames")
-RABBIT_MQ_FULL_URL = "amqp://guest:guest@rabbitmq_service?heartbeat=600&blocked_connection_timeout=300"
+RABBIT_MQ_FULL_URL = os.environ.get(
+    "RABBIT_MQ_FULL_URL", "amqp://localhost:5672")
 
 connection = pika.BlockingConnection(
     pika.URLParameters(RABBIT_MQ_FULL_URL))
@@ -25,6 +29,8 @@ def closeConnection():
 
 
 def sendAmaqpMessage(message):
+    # Pause simulation
+    time.sleep(5)
     channel.basic_publish(
         exchange='', routing_key=RABBIT_CHANEL_NAME, body=message)
 
@@ -42,7 +48,7 @@ async def root():
 async def root(body: RequestBody):
     try:
         username = body.username
-        sendAmaqpMessage(username)
+        Thread(target=sendAmaqpMessage, args=(username, )).start()
         return {"username": body.username, "success": True}
     except Exception as e:
         print(e)

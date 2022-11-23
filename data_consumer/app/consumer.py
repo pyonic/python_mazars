@@ -29,7 +29,6 @@ def callback(ch, method, properties, body):
 
 
 def main():
-    print(RABBIT_MQ_URL, " ", RABBIT_MQ_PORT)
     connection = pika.BlockingConnection(
         pika.URLParameters(RABBIT_MQ_FULL_URL))
     channel = connection.channel()
